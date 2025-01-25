@@ -15,6 +15,8 @@ class Rviz_marker_node:
         self.marker_array = MarkerArray()
         self.flag=0 # flag to read the rostime since on 1st iteration it can give 0 sometimes.
         self.final_msg_flag=0 # flag to print final msg
+        self.time_scale_flag=0
+        self.time_scale=2
         self.id_counter=[0,0,0,0] # for managing marker ids
         self.duration_window = 100 # 100 readings per topic
         self.gaps_collection=[[],[],[],[]]
@@ -58,8 +60,9 @@ class Rviz_marker_node:
         # Set the action for the marker (add, modify, delete)
         marker.action = Marker.ADD
 
+
         # Set the pose of the marker
-        marker.pose.position.x = -5+(msg.data[-1]-self.time)*1.2
+        marker.pose.position.x = -5+(msg.data[-1]-self.time)*self.time_scale
         # print(marker.pose.position)# Assume `data` has attributes x, y, z
         marker.pose.position.y = 5-idx*3 -sub_idx
         marker.pose.position.z = msg.data[sub_idx]*0.3/2
