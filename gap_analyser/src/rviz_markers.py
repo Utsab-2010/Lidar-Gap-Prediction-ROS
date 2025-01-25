@@ -13,10 +13,10 @@ class Rviz_marker_node:
         rospy.init_node("marker_visualizer", anonymous=False)
 
         self.marker_array = MarkerArray()
-        self.flag=0
-        self.final_msg_flag=0
-        self.id_counter=[0,0,0,0]
-        self.duration_window = 100
+        self.flag=0 # flag to read the rostime since on 1st iteration it can give 0 sometimes.
+        self.final_msg_flag=0 # flag to print final msg
+        self.id_counter=[0,0,0,0] # for managing marker ids
+        self.duration_window = 100 # 100 readings per topic
         self.gaps_collection=[[],[],[],[]]
         # Create a publisher to the `visualization_marker` topic
         self.marker_pub = rospy.Publisher("visualization_marker_array", MarkerArray, queue_size=20)
