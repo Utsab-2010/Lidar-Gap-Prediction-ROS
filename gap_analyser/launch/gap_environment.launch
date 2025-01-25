@@ -1,0 +1,41 @@
+<launch>
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_empty_world.world"/>
+        <arg name="paused" value="false"/>
+        <arg name="use_sim_time" value="true"/>
+        <arg name="gui" value="true"/>
+        <arg name="headless" value="false"/>
+        <arg name="debug" value="false"/>
+    </include>
+      <include file="$(find turtlebot3_slam)/launch/turtlebot3_slam.launch">
+            <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+      </include>
+
+  <!-- First Robot -->
+    <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+    <arg name="x_pos" default="0.0"/>
+    <arg name="y_pos" default="0.0"/>
+    <arg name="z_pos" default="0.0"/>
+
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_robot"  args="-urdf -model turtlebot3_$(arg model) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+  
+  <!-- 3 Cylinder Obstacles -->
+    <param name="cylinder_description" command="$(find xacro)/xacro '$(find gap_analyser)/urdfs/cylinder.urdf'" />
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_cylinder_1" 
+          args="-urdf -model cylinder_1 -param cylinder_description -x 1.5 -y 0 -z 0.0" />
+
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_cylinder_2" 
+          args="-urdf -model cylinder_2 -param cylinder_description -x 1 -y 1.0 -z 0.0 " />
+    
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_cylinder_3" 
+          args="-urdf -model cylinder_3 -param cylinder_description -x 0 -y -0.5 -z 0.0 " />
+
+      <!--obstacle movement node-->
+      <arg name="object_speed" default="$(env OBJECT_SPEED)"/>
+      <node pkg="gap_analyser" type="obstacle_movement.py" name="obstacle_movement_node">
+            <param name="object_speed" value="$(arg object_speed)"/>
+      </node>
+      
+</launch>
